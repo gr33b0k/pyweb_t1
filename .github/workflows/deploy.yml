@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build and Deploy
+    name: Deploy on Helios
     runs-on: ubuntu-latest
 
     steps:
@@ -25,6 +25,11 @@ jobs:
       - name: Build
         run: mkdocs build --strict
 
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site/
+
       - name: Install SSH key
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_ed25519
@@ -33,3 +38,21 @@ jobs:
 
       - name: Deploy
         run: rsync -e "ssh -p 2222" --archive --delete site/ ${{ secrets.REMOTE_DEST }}
+
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
