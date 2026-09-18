@@ -4,3 +4,7 @@ site_author: Советный Илья 508761
 repo_url: https://github.com/gr33b0k/pyweb_t1/
 
 use_directory_urls: true
+
+nav:
+  - Главная: index.md
+  - Проверка: test.md
