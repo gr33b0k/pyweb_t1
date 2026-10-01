@@ -1,17 +1,27 @@
-# Советный Илья 508761
+# Публикация результатов исследования
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+---
 
-## Commands
+## О работе
 
-- `mkdocs new [dir-name]` - Create a new project.
-- `mkdocs serve` - Start the live-reloading docs server.
-- `mkdocs build` - Build the documentation site.
-- `mkdocs -h` - Print help message and exit.
+В рамках работы исследуются подходы к публикации результатов исследований с использованием генераторов статических сайтов, автоматизации сборки и развертывания средствами CI/CD.
 
-## Project layout
+В качестве генератора статического сайта выбран MkDocs с темой Material. Сайт содержит материалы исследования, результаты заданий и описание процесса развертывания.
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+---
+
+## Структура работы
+
+### [Ход работы](report/index.md)
+
+установка и настройка окружения, создание сайта, настройка CI/CD и публикация.
+
+### [Теоретическое задание T5](report/t5.md)
+
+Публикуемость и цитируемость результата — исследование механизмов версионирования, постоянных ссылок, DOI, метаданных, лицензирования и принципов FAIR.
+
+### [Практическое задание P4](report/p4.md)
+
+Развертывание на Helios с контролем качества доставки — автоматизация публикации сайта на Helios ИТМО, healthcheck, preview-сборки и механизм отката.
+
+Контрольная строка: `MKDOCS_DEPLOY_TEST_2026`

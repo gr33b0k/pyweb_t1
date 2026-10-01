@@ -1,4 +1,4 @@
-site_name: My Docs
+site_name: Результаты
 site_author: Советный Илья 508761
 
 site_url: !ENV [SITE_URL, https://localhost:8000]
@@ -10,7 +10,13 @@ use_directory_urls: true
 
 nav:
   - Главная: index.md
-  - Проверка: test.md
+  - Отчет:
+      - "Ход работы": report/index.md
+      - "Теоретическое задание Т5": report/t5.md
+      - "Практическое задание P4": report/p4.md
 
 theme:
   name: material
+
+  features:
+    - navigation.sections
