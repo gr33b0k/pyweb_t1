@@ -1,6 +1,6 @@
 # Публикация результатов исследования
 
-[Короткая версия отчета](https://github.com/gr33b0k/pyweb_t1/report.pdf)
+[Короткая версия отчета](https://raw.githubusercontent.com/gr33b0k/pyweb_t1/main/report.pdf)
 
 ---
 
