@@ -2,13 +2,24 @@ name: Build and Deploy
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
-  build:
-    name: Deploy on Helios
+  # ==========================================
+  # GitHub Pages
+  # ==========================================
+  deploy-pages:
+    name: Build and Deploy to GitHub Pages
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout
@@ -23,6 +34,8 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Build
+        env:
+          SITE_URL: https://gr33b0k.github.io/pyweb_t1/
         run: mkdocs build --strict
 
       - name: Upload Pages artifact
@@ -30,29 +43,102 @@ jobs:
         with:
           path: site/
 
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # ==========================================
+  # Helios
+  # ==========================================
+  deploy-helios:
+    name: Build and Deploy to Helios
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python Setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # ----------------------------------------
+      # Определяем URL и каталог публикации
+      # ----------------------------------------
+      - name: Configure deployment
+        run: |
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            echo "SITE_URL=${{ secrets.HELIOS_URL }}" >> "$GITHUB_ENV"
+            echo "REMOTE_PATH=${{ secrets.REMOTE_DEST }}" >> "$GITHUB_ENV"
+          else
+            BRANCH_NAME="${GITHUB_REF_NAME//\//-}"
+
+            echo "SITE_URL=${{ secrets.HELIOS_URL }}/preview/${BRANCH_NAME}/" >> "$GITHUB_ENV"
+            echo "REMOTE_PATH=${{ secrets.REMOTE_DEST }}/preview/${BRANCH_NAME}/" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build
+        run: mkdocs build --strict
+
+      # ----------------------------------------
+      # Установка SSH-ключа
+      # ----------------------------------------
       - name: Install SSH key
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_ed25519
           echo "${{ secrets.PRIVATE_SSH_KEY }}" > ~/.ssh/id_ed25519
           echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
 
+      - name: Backup current version
+        if: github.ref == 'refs/heads/main'
+        run: |
+          REMOTE="${{ secrets.REMOTE_DEST }}"
+          REMOTE_HOST="${REMOTE%%:*}"
+          REMOTE_PATH="${REMOTE#*:}"
+
+          ssh -p 2222 "$REMOTE_HOST" "
+            rm -rf '${REMOTE_PATH}.backup'
+            if [ -d '${REMOTE_PATH}' ]; then
+              cp -a '${REMOTE_PATH}' '${REMOTE_PATH}.backup'
+            fi
+          "
+
       - name: Deploy
-        run: rsync -e "ssh -p 2222" --archive --delete site/ ${{ secrets.REMOTE_DEST }}
+        run: |
+          rsync \
+            -e "ssh -p 2222" \
+            --archive \
+            --delete \
+            site/ \
+            "$REMOTE_PATH"
 
-  deploy-pages:
-    name: Deploy to GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
+      - name: Healthcheck
+        env:
+          HELIOS_URL: ${{ secrets.HELIOS_URL }}
+        run: |
+          echo "Checking $HELIOS_URL"
 
-    permissions:
-      pages: write
-      id-token: write
+          HTTP_CODE=$(curl \
+            -L \
+            -s \
+            -o response.html \
+            -w "%{http_code}" \
+            "$HELIOS_URL")
 
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+          echo "HTTP status: $HTTP_CODE"
 
-    steps:
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Healthcheck failed: HTTP $HTTP_CODE"
+            exit 1
+          fi
+
+          if ! grep -q "MKDOCS_DEPLOY_TEST_2026" response.html; then
+            echo "Healthcheck failed: control string not found"
+            exit 1
+          fi
+
+          echo "Healthcheck passed"
