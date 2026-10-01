@@ -11,10 +11,10 @@ use_directory_urls: true
 nav:
   - Главная: index.md
   - Отчет:
-      - "Ход работы": report/index.md
-      - "Теоретическое задание Т5": report/t5.md
-      - "Практическое задание P4": report/p4.md
-
+      - Ход работы: report/index.md
+      - Теоретическое задание Т5: report/t5.md
+      - Практическое задание P4: report/p4.md
+  - Вывод: report/conclusion.md
 theme:
   name: material
 
