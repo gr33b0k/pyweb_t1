@@ -77,7 +77,7 @@ jobs:
           else
             BRANCH_NAME="${GITHUB_REF_NAME//\//-}"
 
-            echo "SITE_URL=${{ secrets.HELIOS_URL }}preview/${BRANCH_NAME}/" >> "$GITHUB_ENV"
+            echo "SITE_URL=${{ secrets.HELIOS_URL }}/preview/${BRANCH_NAME}/" >> "$GITHUB_ENV"
             echo "REMOTE_PATH=${{ secrets.REMOTE_DEST }}/preview/${BRANCH_NAME}/" >> "$GITHUB_ENV"
           fi
 
