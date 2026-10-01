@@ -93,6 +93,17 @@ jobs:
           echo "${{ secrets.PRIVATE_SSH_KEY }}" > ~/.ssh/id_ed25519
           echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
 
+      - name: Create preview directory
+        if: github.ref != 'refs/heads/main'
+        run: |
+          REMOTE="${{ secrets.REMOTE_DEST }}"
+          REMOTE_HOST="${REMOTE%%:*}"
+          REMOTE_PATH="${REMOTE#*:}"
+          BRANCH_NAME="${GITHUB_REF_NAME//\//-}"
+
+          ssh -p 2222 "$REMOTE_HOST" \
+            "mkdir -p '${REMOTE_PATH}/preview/${BRANCH_NAME}'"
+
       - name: Backup current version
         if: github.ref == 'refs/heads/main'
         run: |
@@ -117,17 +128,15 @@ jobs:
             "$REMOTE_PATH"
 
       - name: Healthcheck
-        env:
-          HELIOS_URL: ${{ secrets.HELIOS_URL }}
         run: |
-          echo "Checking $HELIOS_URL"
+          echo "Checking $SITE_URL"
 
           HTTP_CODE=$(curl \
             -L \
             -s \
             -o response.html \
             -w "%{http_code}" \
-            "$HELIOS_URL")
+            "$SITE_URL")
 
           echo "HTTP status: $HTTP_CODE"
 
