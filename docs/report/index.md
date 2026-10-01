@@ -295,6 +295,8 @@ MKDOCS_DEPLOY_TEST_2026
 
 #### Ошибка 1. GitHub Pages не получил OIDC-токен
 
+![GitHub Pages не получил OIDC-токен](images/gp_permissions_error.jpg)
+
 **Текст ошибки:**
 
 ```text
@@ -329,6 +331,8 @@ permissions:
 
 #### Ошибка 2. SSH не подключается к Helios
 
+![SSH не подключается к Helios](images/helios_ssh_error.jpg)
+
 **Текст ошибки:**
 
 ```text
@@ -349,6 +353,8 @@ Permission denied (publickey)
 ---
 
 #### Ошибка 3. `rsync` не может создать каталог preview
+
+![`rsync` не может создать каталог preview](images/helios_slash_error.jpg)
 
 **Текст ошибки:**
 
