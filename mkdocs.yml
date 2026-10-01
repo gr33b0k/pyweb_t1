@@ -1,10 +1,16 @@
 site_name: My Docs
 site_author: Советный Илья 508761
 
+site_url: !ENV [SITE_URL, https://localhost:8000]
 repo_url: https://github.com/gr33b0k/pyweb_t1/
+
+copyright: "© 2026 Советный Илья Дмитриевич."
 
 use_directory_urls: true
 
 nav:
   - Главная: index.md
   - Проверка: test.md
+
+theme:
+  name: material
