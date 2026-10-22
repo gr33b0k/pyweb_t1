@@ -124,6 +124,7 @@ jobs:
             -e "ssh -p 2222" \
             --archive \
             --delete \
+            --exclude='/preview/' \
             site/ \
             "$REMOTE_PATH"
 
