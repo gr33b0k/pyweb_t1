@@ -1,4 +1,4 @@
-# Публикация результатов исследования (PREVIEW)
+# Публикация результатов исследования
 
 [Короткая версия отчета](https://raw.githubusercontent.com/gr33b0k/pyweb_t1/main/report.pdf)
 
